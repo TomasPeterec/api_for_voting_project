@@ -8,8 +8,8 @@ const API_ROOT = process.env.API_ROOT_URL
 const sendVerificationEmail = async (email, newToken) => {
   try {
     await sgMail.send({
-      to: email, // Change to your recipient
-      from: 'info@tomaspeterec.sk', // Change to your verified sender
+      to: email,
+      from: 'info@tomaspeterec.sk',
       subject: 'Sending with SendGrid is Fun',
       text: `${API_ROOT}/api/users/${VERIFY_EMAIL}/${newToken}`,
       html: `<strong><a href="${API_ROOT}/api/users/${VERIFY_EMAIL}/${newToken}">Confirm your registration</strong>`,
