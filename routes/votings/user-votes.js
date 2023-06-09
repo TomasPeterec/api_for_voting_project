@@ -1,4 +1,4 @@
-const knex = require("./knex");
+const knex = require("../../knex");
 
 function createVote(vote){
     return knex("votings").insert(vote);
