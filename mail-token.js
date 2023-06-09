@@ -1,11 +1,11 @@
+require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
 const generateToken = (email) => {
   // Sign the token with a secret key
   const token = jwt.sign(
-    {email}, 
-    // FIXME: Take it from env var
-    'your-secret-key', 
+    { email }, 
+    `${process.env.MAIL_TOKEN_SECRET_KEY}`, 
     { expiresIn: '1h' },
     );
 

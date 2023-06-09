@@ -1,3 +1,4 @@
+require('dotenv').config();
 const Joi = require('joi');
 const cors = require('cors');
 const express = require('express');
@@ -7,9 +8,10 @@ const veriMail = require('../../mail-triggered');
 const tokenGen = require('../../mail-token');
 const { VERIFY_EMAIL } = require('../../constants')
 
+const REACT_JS_ROOT = process.env.REACT_JS_ROOT_URL
 const router = express.Router();
 router.use(cors({
-    origin: 'http://localhost:3000'
+    origin: `${REACT_JS_ROOT}`
   }));
 router.use(express.json());
 
@@ -76,8 +78,7 @@ router.get(`/${VERIFY_EMAIL}/:token`, async (req, res) => {
   try {
     const updatedUser = await db.setAsVerified(req.params.token)
     if(updatedUser) {
-      console.log(updatedUser)
-      return res.send('Verified')
+      return res.send('Mail verified')
     } else {
       return res.status(400).send('Invalid token');
     }
