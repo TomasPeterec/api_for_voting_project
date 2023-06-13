@@ -1,11 +1,13 @@
+require('dotenv').config();
 const Joi = require('joi');
 const cors = require('cors');
 const express = require('express');
 const db = require("./user-votes");
 
+const REACT_JS_ROOT = process.env.REACT_JS_ROOT_URL
 const router = express.Router();
 router.use(cors({
-    origin: 'http://localhost:3000'
+    origin: `${REACT_JS_ROOT}`
   }));
 router.use(express.json());
 
