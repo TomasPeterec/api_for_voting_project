@@ -23,15 +23,19 @@ router.get("/", async (req, res) => {
 
 router.get("/login", async (req, res) => {
     const { email, password } = req.query;
+
+    console.log(email);
     
     const selectedUser = await db.getUser(email);
+    console.log(selectedUser);
     if (selectedUser.length > 0) {
       const storedHashedPassword = selectedUser[0].password; // Assuming 'password' is the column name for the hashed password
-      
+    
       // Compare 'password' with the provided password
       const passwordMatch = await bcrypt.compare(password, storedHashedPassword);
       
       if (passwordMatch) {
+
         // Passwords match, proceed with login logic
         res.send("Login successful");
       } else {
