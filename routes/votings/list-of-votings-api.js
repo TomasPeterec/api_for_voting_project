@@ -5,9 +5,10 @@ const express = require('express');
 const db = require("./list-of-votings-f");
 
 const REACT_JS_ROOT = process.env.REACT_JS_ROOT_URL
+const REACT_ALT_ROOT = process.env.REACT_ALT_ROOT_URL
 const router = express.Router();
 router.use(cors({
-    origin: `${REACT_JS_ROOT}`
+  origin: [`${REACT_JS_ROOT}`, `${REACT_ALT_ROOT}`]
   }));
 router.use(express.json());
 
@@ -25,8 +26,9 @@ router.get("/:idOfUser", async (req, res) => {
 
 //insertion of new voting record
 router.post("/", async (req, res) => {
-    const {error} = validateUser(req.body)
-    if(error) return res.status(400).send(error.details[0].message)
+    console.log(req.body);
+    // const {error} = validateUser(req.body)
+    // if(error) return res.status(400).send(error.details[0].message)
     const recordedList = await db.createList(req.body)
     res.send(recordedList)
 });
