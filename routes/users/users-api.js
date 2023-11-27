@@ -3,7 +3,7 @@ const cors = require('cors');
 const express = require('express');
 const db = require("./user-knex-handling");
 const bcrypt = require('bcrypt');
-const veriMail = require('../../mail-triggered');
+const { sendVerificationEmail } = require('../../mail-triggered')
 const tokenGen = require('../../mail-token');
 const { VERIFY_EMAIL } = require('../../constants')
 
@@ -25,7 +25,7 @@ router.get("/login", async (req, res) => {
 
     console.log(email);
     
-    const selectedUser = await db.getUser(email);
+    const selectedUser = await db.getUserByEmail(email);
     console.log(selectedUser);
     if (selectedUser.length > 0) {
       const storedHashedPassword = selectedUser[0].password; // Assuming 'password' is the column name for the hashed password
@@ -59,7 +59,7 @@ router.post("/", async (req, res) => {
 
         if (parseInt(recordedUser) === (parseInt(recordedUser) * 1)) {
           console.log(`New primary key ${recordedUser} was sent`);
-          veriMail.sendVerificationEmail(email,token)
+          sendVerificationEmail.sendVerificationEmail(email,token)
         } else {
           console.log('New primary key was not sent');
         }
