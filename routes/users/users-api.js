@@ -73,13 +73,13 @@ router.put('/:id', async (req, res) => {
 })
 
 router.get(`/${VERIFY_EMAIL}/:token`, async (req, res) => {
-  //TODO: Errorhandling should be done by middleware
+
   try {
     const updatedUser = await db.setAsVerified(req.params.token)
     if(updatedUser) {
       return res.send('Mail verified')
     } else {
-      return res.status(400).send('Invalid token');
+      return res.status(401).send('Unauthorized');
     }
   } catch (error) {
     return res.status(500).send(error.message);
