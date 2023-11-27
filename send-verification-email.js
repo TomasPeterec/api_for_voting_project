@@ -2,8 +2,7 @@ const sgMail = require('@sendgrid/mail');
 const { VERIFY_EMAIL } = require('./constants')
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-const API_ROOT = process.env.API_ROOT_URL
-const VOTING_PROJECT_MAIL = process.env.VOTING_PROJECT_MAIL_VAR
+const {API_ROOT, VOTING_PROJECT_MAIL} = proces.env
 
 const sendVerificationEmail = async (email, newToken) => {
   try {
