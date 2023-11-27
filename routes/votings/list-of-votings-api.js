@@ -17,8 +17,8 @@ router.get("/", async (req, res) => {
 });
 
 //get part of Lists by user id (foreign_key)
-router.get("/:idOfUser", async (req, res) => {
-    const partOfLists = await db.getUserVotes(req.params.idOfUser);
+router.get("/:userId", async (req, res) => {
+    const partOfLists = await db.getUserVotes(req.params.userId);
     res.send(partOfLists);
 });
 
