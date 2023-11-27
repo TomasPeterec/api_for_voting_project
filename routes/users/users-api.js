@@ -10,7 +10,7 @@ const { VERIFY_EMAIL } = require('../../constants')
 const REACT_JS_ROOT = process.env.REACT_JS_ROOT_URL
 const router = express.Router();
 router.use(cors({
-  origin: [`${REACT_JS_ROOT}`, `${REACT_JS_ROOT}`]
+  origin: REACT_JS_ROOT
   }));
 router.use(express.json());
 
@@ -28,7 +28,7 @@ router.get("/login", async (req, res) => {
     const selectedUser = await db.getUserByEmail(email);
     console.log(selectedUser);
     if (selectedUser.length > 0) {
-      const storedHashedPassword = selectedUser[0].password; // Assuming 'password' is the column name for the hashed password
+      const storedHashedPassword = selectedUser[0].password; 
     
       // Compare 'password' with the provided password
       const passwordMatch = await bcrypt.compare(password, storedHashedPassword);
