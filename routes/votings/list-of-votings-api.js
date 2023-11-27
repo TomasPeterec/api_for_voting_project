@@ -1,4 +1,3 @@
-require('dotenv').config();
 const Joi = require('joi');
 const cors = require('cors');
 const express = require('express');
