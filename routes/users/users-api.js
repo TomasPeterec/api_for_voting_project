@@ -30,7 +30,6 @@ router.get("/login", async (req, res) => {
     if (selectedUser.length > 0) {
       const storedHashedPassword = selectedUser[0].password; 
     
-      // Compare 'password' with the provided password
       const passwordMatch = await bcrypt.compare(password, storedHashedPassword);
       
       if (passwordMatch) {
@@ -93,11 +92,13 @@ router.delete('/:id', async (req, res) => {
     console.log(`User ${someUser} was deleted`)
 })
 
+const schema = {
+  email: Joi.string().min(3).required(),
+  password: Joi.string().min(3).required()
+};
+
 function validateUser(someUser) {
-    const schema = {
-        email: Joi.string().min(3).required(),
-        password: Joi.string().min(3).required()
-    };
+
     return Joi.validate(someUser, schema);
 }
 
