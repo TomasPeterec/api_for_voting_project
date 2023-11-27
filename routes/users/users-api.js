@@ -90,7 +90,7 @@ router.delete('/:id', async (req, res) => {
     const someUser = await db.deleteUser(req.params.id)
     if(!someUser) return res.status(404).send('The user with the given ID was not found.');
 
-    console.log(someUser)
+    console.log(`User ${someUser} was deleted`)
 })
 
 function validateUser(someUser) {
