@@ -35,14 +35,11 @@ router.get("/login", async (req, res) => {
       
       if (passwordMatch) {
 
-        // Passwords match, proceed with login logic
         res.send("Login successful");
       } else {
-        // Passwords do not match
         res.status(401).send("Incorrect password");
       }
     } else {
-      // User not found
       res.status(404).send("User not found");
     }
   });
@@ -67,7 +64,6 @@ router.post("/", async (req, res) => {
         res.send(recordedUser);
       } catch (error) {
         console.error(error);
-        res.status(500).send('An error occurred during user creation');
       }
 });
 
