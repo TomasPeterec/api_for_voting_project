@@ -1,13 +1,13 @@
-require('dotenv').config();
 const Joi = require('joi');
 const cors = require('cors');
 const express = require('express');
 const db = require("./user-votes-f");
 
 const REACT_JS_ROOT = process.env.REACT_JS_ROOT_URL
+const REACT_ALT_ROOT = process.env.REACT_ALT_ROOT_URL
 const router = express.Router();
 router.use(cors({
-    origin: `${REACT_JS_ROOT}`
+  origin: [`${REACT_JS_ROOT}`, `${REACT_ALT_ROOT}`]
   }));
 router.use(express.json());
 
@@ -25,7 +25,7 @@ router.get("/:foreignKey", async (req, res) => {
 
 //insertion of new voting record
 router.post("/", async (req, res) => {
-    const {error} = validateUser(req.body)
+    const {error} = validateVoting(req.body)
     if(error) return res.status(400).send(error.details[0].message)
     const recordedVote = await db.createVote(req.body)
     res.send(recordedVote)
@@ -41,7 +41,7 @@ router.delete('/:id', async (req, res) => {
     if(!userVote) return res.status(404).send('The userVote with the given ID was not found.');
 })
 
-function validateUser(userVote) {
+function validateVoting(userVote) {
     const schema = {
         foreign_key: Joi.number().min(1).required(),
         mail_or_id: Joi.string().min(3).required(),

@@ -1,4 +1,3 @@
-require('dotenv').config();
 const Joi = require('joi');
 const cors = require('cors');
 const express = require('express');
@@ -11,7 +10,7 @@ const { VERIFY_EMAIL } = require('../../constants')
 const REACT_JS_ROOT = process.env.REACT_JS_ROOT_URL
 const router = express.Router();
 router.use(cors({
-    origin: `${REACT_JS_ROOT}`
+  origin: [`${REACT_JS_ROOT}`, `${REACT_JS_ROOT}`]
   }));
 router.use(express.json());
 
