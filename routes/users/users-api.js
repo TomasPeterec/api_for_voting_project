@@ -3,7 +3,7 @@ const cors = require('cors');
 const express = require('express');
 const db = require("./user-knex-handling");
 const bcrypt = require('bcrypt');
-const { sendVerificationEmail } = require('../../mail-triggered')
+const { sendVerificationEmail } = require('../../send-verification-email')
 const tokenGen = require('../../mail-token');
 const { VERIFY_EMAIL } = require('../../constants')
 
