@@ -8,7 +8,7 @@ function getAllLists() {
     return knex("list_of_votings").select("*");
 };
 
-function getLists(idOfUser) {
+function getUserVotes(idOfUser) {
     return knex("list_of_votings").where("id_of_user", idOfUser).select("*");
 };
 
@@ -25,5 +25,5 @@ module.exports = {
     getAllLists,
     deleteList,
     updateList,
-    getLists
+    getUserVotes
 }
