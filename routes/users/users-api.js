@@ -5,7 +5,7 @@ const db = require("./user-knex-handling");
 const bcrypt = require('bcrypt');
 const { sendVerificationEmail } = require('../../send-verification-email')
 const tokenGen = require('../../mail-token');
-const { VERIFY_EMAIL } = require('../../constants')
+const { VERIFY_EMAIL_API_ENDPOINT } = require('../../constants')
 
 const REACT_JS_ROOT = process.env.REACT_JS_ROOT_URL
 const router = express.Router();
@@ -54,10 +54,10 @@ router.post("/", async (req, res) => {
         const recordedUser = await db.createUser({ email, password: hashedPassword, verified: token });
 
         if (parseInt(recordedUser) === (parseInt(recordedUser) * 1)) {
-          console.log(`New primary key ${recordedUser} was sent`);
+          console.log(`New primary key ${recordedUser} was send.`);
           sendVerificationEmail.sendVerificationEmail(email,token)
         } else {
-          console.log('New primary key was not sent');
+          console.log('New primary key was not send.');
         }
 
         res.send(recordedUser);
@@ -67,11 +67,20 @@ router.post("/", async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
-    const updatedUser = await db.updateUser(req.params.id, req.body)
-    if(!updatedUser) return res.status(404).send('The user with the given ID was not found.');
+    
+    try {
+      const updatedUser = await db.updateUser(req.params.id, req.body)
+      if(updatedUser) {
+        return res.send('The user with the given ID was updated.');
+      }else{
+        return res.status(404).send('The user with the given ID was not found.');
+      }
+    } catch (error) {
+      return res.status(500).send(error.message);
+    }
 })
 
-router.get(`/${VERIFY_EMAIL}/:token`, async (req, res) => {
+router.get(`/${VERIFY_EMAIL_API_ENDPOINT}/:token`, async (req, res) => {
 
   try {
     const updatedUser = await db.setAsVerified(req.params.token)
