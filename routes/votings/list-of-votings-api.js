@@ -44,8 +44,19 @@ router.put('/:id', async (req, res) => {
 })
 
 router.delete('/:id', async (req, res) => {
-  const userList = await db.deleteList(req.params.id)
-  if(!userList) return res.status(404).send('The userList with the given ID was not found.');
+  try{
+    const userList = await db.deleteList(req.params.id)
+    if(userList) {
+      return res.send('The userList with the given ID was deleted.');
+    } else {
+      return res.status(404).send('The userList with the given ID was not found.');
+    }
+  }catch (error) {
+    return res.status(500).send(error.message);
+  }
+
+
+
 })
 
 function validateUser(userList) {
