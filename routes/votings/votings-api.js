@@ -17,9 +17,9 @@ router.get("/", async (req, res) => {
     res.send(allVotes);
 });
 
-//get part of votes by election id (foreign_key)
-router.get("/:foreignKey", async (req, res) => {
-    const partOfVotes = await db.getVotes(req.params.foreignKey);
+//get part of votes by election id (votings_id)
+router.get("/:votings_id", async (req, res) => {
+    const partOfVotes = await db.getVotes(req.params.votings_id);
     res.send(partOfVotes);
 });
 
@@ -43,7 +43,7 @@ router.delete('/:id', async (req, res) => {
 
 function validateVoting(userVote) {
     const schema = {
-        foreign_key: Joi.number().min(1).required(),
+        votings_id: Joi.number().min(1).required(),
         mail_or_id: Joi.string().min(3).required(),
         voted_values: Joi.string().min(3).required()
     };
