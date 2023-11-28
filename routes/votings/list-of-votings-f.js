@@ -13,11 +13,11 @@ function getUserVotes(idOfUser) {
 };
 
 function deleteList(id) {
-    return knex("list_of_votings").where("primary_key", id).del();
+    return knex("list_of_votings").where("id", id).del();
 };
 
 function updateList(id, list){
-    return knex("list_of_votings").where("primary_key", id).update(list);
+    return knex("list_of_votings").where("id", id).update(list);
 };
 
 module.exports = {
