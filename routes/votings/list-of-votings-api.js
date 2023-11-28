@@ -22,7 +22,7 @@ router.get("/:userId", async (req, res) => {
     res.send(partOfLists);
 });
 
-//insertion of new voting record
+//adds a new user vote
 router.post("/", async (req, res) => {
     const {error} = validateUser(req.body)
     if(error) return res.status(400).send(error.details[0].message)
