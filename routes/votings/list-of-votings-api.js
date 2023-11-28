@@ -55,17 +55,15 @@ router.delete('/:id', async (req, res) => {
     return res.status(500).send(error.message);
   }
 
-
-
 })
 
-function validateUser(userList) {
+function validateUser(userListName) {
   const schema = {
     foreign_key: Joi.number().min(1).required(),
     mail_or_id: Joi.string().min(3).required(),
     listd_values: Joi.string().min(3).required()
   };
-  return Joi.validate(userList, schema);
+  return Joi.validate(userListName, schema);
 }
 
 module.exports = router;
