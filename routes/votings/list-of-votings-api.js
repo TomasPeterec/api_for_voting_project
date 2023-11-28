@@ -6,47 +6,55 @@ const db = require("./list-of-votings-f");
 const REACT_JS_ROOT = process.env.REACT_JS_ROOT_URL
 const router = express.Router();
 router.use(cors({
-    origin: `${REACT_JS_ROOT}`
-  }));
+  origin: `${REACT_JS_ROOT}`
+}));
 router.use(express.json());
 
 //get all Lists 
 router.get("/", async (req, res) => {
-    const allLists = await db.getAllLists();
-    res.send(allLists);
+  const allLists = await db.getAllLists();
+  res.send(allLists);
 });
 
 //get part of Lists by user id (foreign_key)
 router.get("/:userId", async (req, res) => {
-    const partOfLists = await db.getUserVotes(req.params.userId);
-    res.send(partOfLists);
+  const partOfLists = await db.getUserVotes(req.params.userId);
+  res.send(partOfLists);
 });
 
 //adds a new user vote
 router.post("/", async (req, res) => {
-    const {error} = validateUser(req.body)
-    if(error) return res.status(400).send(error.details[0].message)
-    const recordedList = await db.createList(req.body)
-    res.send(recordedList)
+  const {error} = validateUser(req.body)
+  if(error) return res.status(400).send(error.details[0].message)
+  const recordedList = await db.createList(req.body)
+  res.send(recordedList)
 });
 
 router.put('/:id', async (req, res) => {
+  try{
     const updatedList = await db.updateList(req.params.id, req.body)
-    if(!updatedList) return res.status(404).send('The userList with the given ID was not found.');
+    if(updatedList) {
+      return res.send('The userList with the given ID was updated.');
+    } else {
+      return res.status(404).send('The userList with the given ID was not found.');
+    }
+  }catch (error) {
+    return res.status(500).send(error.message);
+  }
 })
 
 router.delete('/:id', async (req, res) => {
-    const userList = await db.deleteList(req.params.id)
-    if(!userList) return res.status(404).send('The userList with the given ID was not found.');
+  const userList = await db.deleteList(req.params.id)
+  if(!userList) return res.status(404).send('The userList with the given ID was not found.');
 })
 
 function validateUser(userList) {
-    const schema = {
-        foreign_key: Joi.number().min(1).required(),
-        mail_or_id: Joi.string().min(3).required(),
-        listd_values: Joi.string().min(3).required()
-    };
-    return Joi.validate(userList, schema);
+  const schema = {
+    foreign_key: Joi.number().min(1).required(),
+    mail_or_id: Joi.string().min(3).required(),
+    listd_values: Joi.string().min(3).required()
+  };
+  return Joi.validate(userList, schema);
 }
 
 module.exports = router;
