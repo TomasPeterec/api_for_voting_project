@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
   res.send(allLists);
 });
 
-//get part of Lists by user id (foreign_key)
+//get part of Lists by user id (id_of_user)
 router.get("/:userId", async (req, res) => {
   const partOfLists = await db.getUserVotes(req.params.userId);
   res.send(partOfLists);
@@ -59,9 +59,8 @@ router.delete('/:id', async (req, res) => {
 
 function validateUser(userListName) {
   const schema = {
-    foreign_key: Joi.number().min(1).required(),
-    mail_or_id: Joi.string().min(3).required(),
-    listd_values: Joi.string().min(3).required()
+    id_of_user: Joi.number().min(1).required(),
+    name_of_voting: Joi.string().min(3).required()
   };
   return Joi.validate(userListName, schema);
 }
