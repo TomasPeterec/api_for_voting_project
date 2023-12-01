@@ -6,8 +6,8 @@ const db = require("./list-of-votings-f");
 const REACT_JS_ROOT = process.env.REACT_JS_ROOT_URL
 const router = express.Router();
 router.use(cors({
-  origin: `${REACT_JS_ROOT}`
-}));
+  origin: process.env.ALLOWED_ORIGINS,
+}))
 router.use(express.json());
 
 //get all Lists 

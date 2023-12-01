@@ -45,8 +45,16 @@ router.put('/:id', async (req, res) => {
 })
 
 router.delete('/:id', async (req, res) => {
-  const userVote = await db.deleteVote(req.params.id)
-  if(!userVote) return res.status(404).send('The userVote with the given ID was not found.');
+  try{
+    const userVote = await db.deleteVote(req.params.id)
+    if(userVote) {
+      return res.send('The userVote with the given ID was deleted.');
+    } else {
+      return res.status(404).send('The userVote with the given ID was not found.');
+    }
+  }catch (error) {
+    return res.status(500).send(error.message);
+  }
 })
 
 function validateVoting(userVote) {
