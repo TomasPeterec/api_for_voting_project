@@ -3,11 +3,12 @@ const cors = require('cors');
 const express = require('express');
 const db = require("./list-of-votings-f");
 
-const REACT_JS_ROOT = process.env.REACT_JS_ROOT_URL
 const router = express.Router();
+const reactJsRootUrl = process.env.ALLOWED_ORIGINS;
+
 router.use(cors({
-  origin: process.env.ALLOWED_ORIGINS,
-}))
+  origin: reactJsRootUrl ? [reactJsRootUrl] : [], // Use the origin directly
+}));
 router.use(express.json());
 
 //get all Lists 
