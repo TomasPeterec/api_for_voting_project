@@ -1,17 +1,16 @@
-require('dotenv').config();
 const Joi = require('joi');
 const cors = require('cors');
 const express = require('express');
 const db = require("./user-knex-handling");
 const bcrypt = require('bcrypt');
-const veriMail = require('../../mail-triggered');
+const { sendVerificationEmail } = require('../../send-verification-email')
 const tokenGen = require('../../mail-token');
-const { VERIFY_EMAIL } = require('../../constants')
+const { VERIFY_EMAIL_API_ENDPOINT } = require('../../constants')
 
 const REACT_JS_ROOT = process.env.REACT_JS_ROOT_URL
 const router = express.Router();
 router.use(cors({
-    origin: `${REACT_JS_ROOT}`
+  origin: REACT_JS_ROOT
   }));
 router.use(express.json());
 
@@ -23,23 +22,23 @@ router.get("/", async (req, res) => {
 
 router.get("/login", async (req, res) => {
     const { email, password } = req.query;
+
+    console.log(email);
     
-    const selectedUser = await db.getUser(email);
+    const selectedUser = await db.getUserByEmail(email);
+    console.log(selectedUser);
     if (selectedUser.length > 0) {
-      const storedHashedPassword = selectedUser[0].password; // Assuming 'password' is the column name for the hashed password
-      
-      // Compare 'password' with the provided password
+      const storedHashedPassword = selectedUser[0].password; 
+    
       const passwordMatch = await bcrypt.compare(password, storedHashedPassword);
       
       if (passwordMatch) {
-        // Passwords match, proceed with login logic
+
         res.send("Login successful");
       } else {
-        // Passwords do not match
         res.status(401).send("Incorrect password");
       }
     } else {
-      // User not found
       res.status(404).send("User not found");
     }
   });
@@ -55,32 +54,40 @@ router.post("/", async (req, res) => {
         const recordedUser = await db.createUser({ email, password: hashedPassword, verified: token });
 
         if (parseInt(recordedUser) === (parseInt(recordedUser) * 1)) {
-          console.log(`New primary key ${recordedUser} was sent`);
-          veriMail.sendVerificationEmail(email,token)
+          console.log(`New primary key ${recordedUser} was send.`);
+          sendVerificationEmail.sendVerificationEmail(email,token)
         } else {
-          console.log('New primary key was not sent');
+          console.log('New primary key was not send.');
         }
 
         res.send(recordedUser);
       } catch (error) {
         console.error(error);
-        res.status(500).send('An error occurred during user creation');
       }
 });
 
 router.put('/:id', async (req, res) => {
-    const updatedUser = await db.updateUser(req.params.id, req.body)
-    if(!updatedUser) return res.status(404).send('The user with the given ID was not found.');
+    
+    try {
+      const updatedUser = await db.updateUser(req.params.id, req.body)
+      if(updatedUser) {
+        return res.send('The user with the given ID was updated.');
+      }else{
+        return res.status(404).send('The user with the given ID was not found.');
+      }
+    } catch (error) {
+      return res.status(500).send(error.message);
+    }
 })
 
-router.get(`/${VERIFY_EMAIL}/:token`, async (req, res) => {
-  //TODO: Errorhandling should be done by middleware
+router.get(`/${VERIFY_EMAIL_API_ENDPOINT}/:token`, async (req, res) => {
+
   try {
     const updatedUser = await db.setAsVerified(req.params.token)
     if(updatedUser) {
       return res.send('Mail verified')
     } else {
-      return res.status(400).send('Invalid token');
+      return res.status(401).send('Unauthorized');
     }
   } catch (error) {
     return res.status(500).send(error.message);
@@ -91,14 +98,16 @@ router.delete('/:id', async (req, res) => {
     const someUser = await db.deleteUser(req.params.id)
     if(!someUser) return res.status(404).send('The user with the given ID was not found.');
 
-    console.log(someUser)
+    console.log(`User ${someUser} was deleted`)
 })
 
+const schema = {
+  email: Joi.string().min(3).required(),
+  password: Joi.string().min(3).required()
+};
+
 function validateUser(someUser) {
-    const schema = {
-        email: Joi.string().min(3).required(),
-        password: Joi.string().min(3).required()
-    };
+
     return Joi.validate(someUser, schema);
 }
 

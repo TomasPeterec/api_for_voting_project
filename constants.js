@@ -1,5 +1,5 @@
-const VERIFY_EMAIL = "verify-email"
+const VERIFY_EMAIL_API_ENDPOINT = "/api/users/verify-email"
 
 module.exports = {
-    VERIFY_EMAIL,
+    VERIFY_EMAIL_API_ENDPOINT,
 }
