@@ -1,6 +1,8 @@
 const knex = require("../../knex");
 
 function createList(list){
+    console.log("preslodo funkcie")
+    console.log(list)
     return knex("list_of_votings").insert(list);
 };
 
