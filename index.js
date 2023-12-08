@@ -7,7 +7,7 @@ const users = require('./routes/users/users-api');
 const app = express();
 const PORT_VAR = process.env.API_PORT
 
-// Mount route files
+// Configure request handlers
 app.use('/api/userVotes', votingsRoutes);
 app.use('/api/listOfVotings', listOfVotings);
 app.use('/api/users', users);

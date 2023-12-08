@@ -1,14 +1,12 @@
 const knex = require("../../knex");
 
-async function createUser(vote){
-    return await knex("users").insert(vote);
-};
+const createUser = vote => knex("users").insert(vote)
 
 async function getAllUsers() {
     return await knex("users").select("*");
 };
 
-async function getUser(email) {
+async function getUserByEmail(email) {
     return await knex("users").where("email", email);
 };
 
@@ -29,6 +27,6 @@ module.exports = {
     getAllUsers,
     deleteUser,
     updateUser,
-    getUser,
+    getUserByEmail,
     setAsVerified
 }
