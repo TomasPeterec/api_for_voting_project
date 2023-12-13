@@ -3,12 +3,12 @@ const cors = require('cors');
 const express = require('express');
 const db = require("./user-votes-f");
 
-const REACT_JS_ROOT = process.env.REACT_JS_ROOT_URL
-const REACT_ALT_ROOT = process.env.REACT_ALT_ROOT_URL
 const router = express.Router();
+const reactJsRootUrl = process.env.ALLOWED_ORIGINS;
+
 router.use(cors({
-  origin: [`${REACT_JS_ROOT}`, `${REACT_ALT_ROOT}`]
-  }));
+  origin: reactJsRootUrl ? [reactJsRootUrl] : [], // Use the origin directly
+}));
 router.use(express.json());
 
 //get all votes 

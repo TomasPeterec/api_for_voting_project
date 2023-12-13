@@ -7,11 +7,12 @@ const { sendVerificationEmail } = require('../../send-verification-email')
 const tokenGen = require('../../mail-token');
 const { VERIFY_EMAIL_API_ENDPOINT } = require('../../constants')
 
-const REACT_JS_ROOT = process.env.REACT_JS_ROOT_URL
 const router = express.Router();
+const reactJsRootUrl = process.env.ALLOWED_ORIGINS;
+
 router.use(cors({
-  origin: REACT_JS_ROOT
-  }));
+  origin: reactJsRootUrl ? [reactJsRootUrl] : [], // Use the origin directly
+}));
 router.use(express.json());
 
 //get all users 

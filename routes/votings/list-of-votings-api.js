@@ -19,12 +19,14 @@ router.get("/", async (req, res) => {
 
 //get part of Lists by user id (id_of_user)
 router.get("/:userId", async (req, res) => {
-  const partOfLists = await db.getUserVotes(req.params.userId);
+  console.log("zachyt get")
+  const partOfLists = await db.getUserLists(req.params.userId);
   res.send(partOfLists);
 });
 
 //adds a new user vote
 router.post("/", async (req, res) => {
+  console.log("zachyt post")
   const {error} = validateUser(req.body)
   if(error) return res.status(400).send(error.details[0].message)
   const recordedList = await db.createList(req.body)
