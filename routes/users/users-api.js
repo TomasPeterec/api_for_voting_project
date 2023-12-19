@@ -77,7 +77,7 @@ router.put('/:id', async (req, res) => {
         return res.status(404).send('The user with the given ID was not found.');
       }
     } catch (error) {
-      return res.status(500).send(error.message);
+      console.error('Error creating user vote:', error);
     }
 })
 
@@ -91,7 +91,7 @@ router.get(`/${VERIFY_EMAIL_API_ENDPOINT}/:token`, async (req, res) => {
       return res.status(401).send('Unauthorized');
     }
   } catch (error) {
-    return res.status(500).send(error.message);
+    console.error('Error creating user vote:', error);
   }
 })
 

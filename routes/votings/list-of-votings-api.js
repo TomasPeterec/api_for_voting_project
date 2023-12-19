@@ -49,7 +49,6 @@ router.post("/", async (req, res) => {
     res.send(recordedList);
   } catch (error) {
     console.error('Error creating user vote:', error);
-    res.status(500).send('Internal Server Error');
   }
 });
 
@@ -63,7 +62,6 @@ router.put('/:id', async (req, res) => {
     }
   } catch (error) {
     console.error('Error updating user vote:', error);
-    res.status(500).send('Internal Server Error');
   }
 });
 
@@ -77,7 +75,6 @@ router.delete('/:id', async (req, res) => {
     }
   } catch (error) {
     console.error('Error deleting user vote:', error);
-    res.status(500).send('Internal Server Error');
   }
 });
 
