@@ -13,7 +13,7 @@ function getUserLists (idOfUser) {
 };
 
 function deleteList (id) {
-  return knex('list_of_votings').where('id', id).del()
+  return knex('list_of_votings').where('lov_id', id).del()
 };
 
 function updateList (id, list) {

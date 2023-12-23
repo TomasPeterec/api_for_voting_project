@@ -1,3 +1,13 @@
 .env
 node_modules/
 db/
+
+# Ignore Visual Studio Code settings
+.vscode/
+
+# Ignore ESLint configuration files
+.eslintrc.json
+.eslintignore
+
+# Ignore Prettier configuration file
+.prettierrc.json

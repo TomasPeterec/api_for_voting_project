@@ -24,10 +24,8 @@ router.get('/', async (req, res) => {
 router.get('/login', async (req, res) => {
   const { email, password } = req.query
 
-  console.log(email)
-
   const selectedUser = await db.getUserByEmail(email)
-  console.log(selectedUser)
+
   if (selectedUser.length > 0) {
     const storedHashedPassword = selectedUser[0].password
 
