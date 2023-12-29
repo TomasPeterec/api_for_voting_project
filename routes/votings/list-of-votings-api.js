@@ -38,6 +38,15 @@ router.get('/subset', async (req, res) => {
   res.send(partOfLists)
 })
 
+router.get('/template/:lov_id', async (req, res) => {
+  // Access the User ID from req.locals
+  const partOfLists = await db.getUserCurentList(
+    req.locals.userId,
+    req.params.lov_id
+  )
+  res.send(partOfLists[0].template)
+})
+
 // Add a new user vote
 router.post('/', async (req, res) => {
   try {
@@ -46,7 +55,6 @@ router.post('/', async (req, res) => {
       id_of_user: req.locals.userId,
       lov_id: uuidv4()
     }
-    console.log(userVoteData)
     const { error } = validateUser(userVoteData)
     if (error) return res.status(400).send(error.details[0].message)
     const recordedList = await db.createList(userVoteData)
