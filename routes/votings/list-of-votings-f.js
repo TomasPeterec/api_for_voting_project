@@ -23,15 +23,21 @@ function deleteList(id) {
   return knex('list_of_votings').where('lov_id', id).del()
 }
 
-function updateList(id, list) {
-  return knex('list_of_votings').where('id', id).update(list)
+function updateListTemplate(id, lovId, newDescription) {
+  const jsonString = JSON.stringify(newDescription, null, 2)
+  return knex('list_of_votings')
+    .where('lov_id', lovId)
+    .andWhere('id_of_user', id)
+    .update({
+      template: jsonString
+    })
 }
 
 module.exports = {
   createList,
   getAllLists,
   deleteList,
-  updateList,
   getUserLists,
-  getUserCurentList
+  getUserCurentList,
+  updateListTemplate
 }

@@ -64,9 +64,26 @@ router.post('/', async (req, res) => {
   }
 })
 
-router.put('/:id', async (req, res) => {
+router.put('/template', async (req, res) => {
   try {
-    const updatedList = await db.updateList(req.params.id, req.body)
+    const partOfLists = await db.getUserCurentList(
+      req.locals.userId,
+      req.body.lov_id
+    )
+
+    const listForUpdate = JSON.parse(partOfLists[0].template)
+    listForUpdate.push({
+      title: req.body.title,
+      votingValue: 0,
+      description: req.body.description
+    })
+
+    const updatedList = await db.updateListTemplate(
+      req.locals.userId,
+      req.body.lov_id,
+      listForUpdate
+    )
+
     if (updatedList) {
       return res.send('The userList with the given ID was updated.')
     } else {
