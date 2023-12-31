@@ -96,6 +96,25 @@ router.put('/template', async (req, res) => {
   }
 })
 
+router.put('/template/delete', async (req, res) => {
+  try {
+    const updatedList = await db.updateListTemplate(
+      req.locals.userId,
+      req.body.lov_id,
+      req.body.template
+    )
+    if (updatedList) {
+      return res.send('The candidate with the given name was deleted.')
+    } else {
+      return res
+        .status(404)
+        .send('The userList with the given ID was not found.')
+    }
+  } catch (error) {
+    console.error('Error updating user vote:', error)
+  }
+})
+
 router.delete('/:lov_id', async (req, res) => {
   try {
     const userList = await db.deleteList(req.params.lov_id)

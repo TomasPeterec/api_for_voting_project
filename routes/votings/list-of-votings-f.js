@@ -1,7 +1,8 @@
 const knex = require('../../knex')
 
 function createList(list) {
-  return knex('list_of_votings').insert(list)
+  const jsonString = JSON.stringify([], null, 2)
+  return knex('list_of_votings').insert({ ...list, template: jsonString })
 }
 
 function getAllLists() {
