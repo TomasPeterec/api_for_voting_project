@@ -96,6 +96,45 @@ router.put('/template', async (req, res) => {
   }
 })
 
+router.put('/template/change', async (req, res) => {
+  try {
+    const partOfLists = await db.getUserCurentList(
+      req.locals.userId,
+      req.body.lov_id
+    )
+
+    const listForUpdate = JSON.parse(partOfLists[0].template)
+
+    const newListForUpdate = listForUpdate
+
+    for (let i = 0; i < listForUpdate.length; i++) {
+      if (listForUpdate[i].title === req.body.oldTitle) {
+        newListForUpdate[i] = {
+          title: req.body.title,
+          votingValue: 0,
+          description: req.body.description
+        }
+      }
+    }
+
+    const updatedList = await db.updateListTemplate(
+      req.locals.userId,
+      req.body.lov_id,
+      newListForUpdate
+    )
+
+    if (updatedList) {
+      return res.send('The userList with the given ID was updated.')
+    } else {
+      return res
+        .status(404)
+        .send('The userList with the given ID was not found.')
+    }
+  } catch (error) {
+    console.error('Error updating user vote:', error)
+  }
+})
+
 router.put('/template/delete', async (req, res) => {
   try {
     const updatedList = await db.updateListTemplate(
