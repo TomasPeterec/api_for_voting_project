@@ -4,15 +4,18 @@ const express = require('express')
 const db = require('./user-knex-handling')
 const bcrypt = require('bcrypt')
 const { sendVerificationEmail } = require('../../send-verification-email')
+const SendMultipleEmails = require('../../send-multiple-emails')
 const tokenGen = require('../../mail-token')
 const { VERIFY_EMAIL_API_ENDPOINT } = require('../../constants')
 
 const router = express.Router()
 const reactJsRootUrl = process.env.ALLOWED_ORIGINS
 
-router.use(cors({
-  origin: reactJsRootUrl ? [reactJsRootUrl] : [] // Use the origin directly
-}))
+router.use(
+  cors({
+    origin: reactJsRootUrl ? [reactJsRootUrl] : [] // Use the origin directly
+  })
+)
 router.use(express.json())
 
 // get all users
@@ -49,9 +52,13 @@ router.post('/', async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, 10)
   try {
     const token = tokenGen.generateToken(email)
-    const recordedUser = await db.createUser({ email, password: hashedPassword, verified: token })
+    const recordedUser = await db.createUser({
+      email,
+      password: hashedPassword,
+      verified: token
+    })
 
-    if (parseInt(recordedUser) === (parseInt(recordedUser) * 1)) {
+    if (parseInt(recordedUser) === parseInt(recordedUser) * 1) {
       console.log(`New primary key ${recordedUser} was send.`)
       sendVerificationEmail.sendVerificationEmail(email, token)
     } else {
@@ -59,6 +66,37 @@ router.post('/', async (req, res) => {
     }
 
     res.send(recordedUser)
+  } catch (error) {
+    console.error(error)
+  }
+})
+
+router.post('/multiplemails', async (req, res) => {
+  // console.log(req.body)
+  // const { error } = validateUser(req.body)
+  // if (error) return res.status(400).send(error.details[0].message)
+
+  try {
+    const token = tokenGen.generateToken(req.body.mails[0])
+    console.log(req.body.lov_id)
+    // const recordedUser = await db.createUser({
+    //   email,
+    //   password: hashedPassword,
+    //   verified: token
+    // })
+
+    // if (parseInt(recordedUser) === parseInt(recordedUser) * 1) {
+    //   console.log(`New primary key ${recordedUser} was send.`)
+    //   SendMultipleEmails.SendMultipleEmails(email, token)
+    // } else {
+    //   console.log('New primary key was not send.')
+    // }
+
+    for (let i = 0; i < req.body.mails.length; i++) {
+      SendMultipleEmails(req.body.mails[i], token)
+    }
+
+    // res.send(recordedUser)
   } catch (error) {
     console.error(error)
   }
@@ -92,7 +130,9 @@ router.get(`/${VERIFY_EMAIL_API_ENDPOINT}/:token`, async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   const someUser = await db.deleteUser(req.params.id)
-  if (!someUser) return res.status(404).send('The user with the given ID was not found.')
+  if (!someUser) {
+    return res.status(404).send('The user with the given ID was not found.')
+  }
 
   console.log(`User ${someUser} was deleted`)
 })
@@ -102,7 +142,7 @@ const schema = {
   password: Joi.string().min(3).required()
 }
 
-function validateUser (someUser) {
+function validateUser(someUser) {
   return Joi.validate(someUser, schema)
 }
 
