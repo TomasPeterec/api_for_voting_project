@@ -1,29 +1,44 @@
-const knex = require("../../knex");
+const knex = require('../../knex')
 
-function createList(list){
-    return knex("list_of_votings").insert(list);
-};
+function createList(list) {
+  const jsonString = JSON.stringify([], null, 2)
+  return knex('list_of_votings').insert({ ...list, template: jsonString })
+}
 
 function getAllLists() {
-    return knex("list_of_votings").select("*");
-};
+  return knex('list_of_votings').select('*')
+}
 
-function getUserVotes(idOfUser) {
-    return knex("list_of_votings").where("id_of_user", idOfUser).select("*");
-};
+function getUserLists(idOfUser) {
+  return knex('list_of_votings').where('id_of_user', idOfUser).select('*')
+}
+
+function getUserCurentList(id, lovId) {
+  return knex('list_of_votings')
+    .where('lov_id', lovId)
+    .andWhere('id_of_user', id)
+    .select('template')
+}
 
 function deleteList(id) {
-    return knex("list_of_votings").where("id", id).del();
-};
+  return knex('list_of_votings').where('lov_id', id).del()
+}
 
-function updateList(id, list){
-    return knex("list_of_votings").where("id", id).update(list);
-};
+function updateListTemplate(id, lovId, newDescription) {
+  const jsonString = JSON.stringify(newDescription, null, 2)
+  return knex('list_of_votings')
+    .where('lov_id', lovId)
+    .andWhere('id_of_user', id)
+    .update({
+      template: jsonString
+    })
+}
 
 module.exports = {
-    createList,
-    getAllLists,
-    deleteList,
-    updateList,
-    getUserVotes
+  createList,
+  getAllLists,
+  deleteList,
+  getUserLists,
+  getUserCurentList,
+  updateListTemplate
 }

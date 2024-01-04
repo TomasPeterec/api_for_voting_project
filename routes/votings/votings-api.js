@@ -1,69 +1,69 @@
-const Joi = require('joi');
-const cors = require('cors');
-const express = require('express');
-const db = require("./user-votes-f");
+const Joi = require('joi')
+const cors = require('cors')
+const express = require('express')
+const db = require('./user-votes-f')
 
-const REACT_JS_ROOT = process.env.REACT_JS_ROOT_URL
-const REACT_ALT_ROOT = process.env.REACT_ALT_ROOT_URL
-const router = express.Router();
+const router = express.Router()
+const reactJsRootUrl = process.env.ALLOWED_ORIGINS
+
 router.use(cors({
-  origin: [`${REACT_JS_ROOT}`, `${REACT_ALT_ROOT}`]
-  }));
-router.use(express.json());
+  origin: reactJsRootUrl ? [reactJsRootUrl] : [] // Use the origin directly
+}))
+router.use(express.json())
 
-//get all votes 
-router.get("/", async (req, res) => {
-  const allVotes = await db.getAllVotes();
-  res.send(allVotes);
-});
+// get all votes
+router.get('/', async (req, res) => {
+  const allVotes = await db.getAllVotes()
+  res.send(allVotes)
+})
 
-//get part of votes by election id (votings_id)
-router.get("/:votings_id", async (req, res) => {
-  const partOfVotes = await db.getVotes(req.params.votings_id);
-  res.send(partOfVotes);
-});
+// get part of votes by election id (votings_id)
+router.get('/:votings_id', async (req, res) => {
+  const partOfVotes = await db.getVotes(req.params.votings_id)
+  res.send(partOfVotes)
+})
 
-//add a new voting
-router.post("/", async (req, res) => {
-  const {error} = validateVoting(req.body)
-  if(error) return res.status(400).send(error.details[0].message)
+// add a new voting
+router.post('/', async (req, res) => {
+  const { error } = validateVoting(req.body)
+  if (error) return res.status(400).send(error.details[0].message)
   const recordedVote = await db.createVote(req.body)
   res.send(recordedVote)
-});
+})
 
 router.put('/:id', async (req, res) => {
-  try{
+  try {
     const updatedVote = await db.updateVote(req.params.id, req.body)
-    if(updatedVote) {
-      return res.send('The userVote with the given ID was updated.');
+    if (updatedVote) {
+      return res.send('The userVote with the given ID was updated.')
     } else {
-      return res.status(404).send('The userVote with the given ID was not found.');
+      return res.status(404).send('The userVote with the given ID was not found.')
     }
-  }catch (error) {
-    return res.status(500).send(error.message);
+  } catch (error) {
+    console.error('Error creating user vote:', error)
   }
 })
 
 router.delete('/:id', async (req, res) => {
-  try{
+  try {
     const userVote = await db.deleteVote(req.params.id)
-    if(userVote) {
-      return res.send('The userVote with the given ID was deleted.');
+    if (userVote) {
+      return res.send('The userVote with the given ID was deleted.')
     } else {
-      return res.status(404).send('The userVote with the given ID was not found.');
+      return res.status(404).send('The userVote with the given ID was not found.')
     }
-  }catch (error) {
-    return res.status(500).send(error.message);
+  } catch (error) {
+    console.error('Error creating user vote:', error)
   }
 })
 
-function validateVoting(userVote) {
+function validateVoting (userVote) {
   const schema = {
     votings_id: Joi.number().min(1).required(),
     mail_or_id: Joi.string().min(3).required(),
     voted_values: Joi.string().min(3).required()
-  };
-  return Joi.validate(userVote, schema);
+  }
+  return Joi.validate(userVote, schema)
 }
 
-module.exports = router;
+module.exports = router

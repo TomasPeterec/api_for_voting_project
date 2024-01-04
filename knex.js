@@ -1,9 +1,9 @@
-const knex = require("knex");
+const knex = require('knex')
 const connectedKnex = knex({
-    client: "sqlite3",
-    connection: {
-        filename:"./db/votes.db"
-    }
-});
+  client: 'sqlite3',
+  connection: {
+    filename: './db/votes.db'
+  }
+})
 
-module.exports = connectedKnex;
+module.exports = connectedKnex
