@@ -96,6 +96,19 @@ router.post('/multiplemails', async (req, res) => {
   }
 })
 
+router.put('/nevSetOfMails', async (req, res) => {
+  try {
+    const updatedUser = await db.updateUser(req.params.id, req.body)
+    if (updatedUser) {
+      return res.send('The user with the given ID was updated.')
+    } else {
+      return res.status(404).send('The user with the given ID was not found.')
+    }
+  } catch (error) {
+    console.error('Error creating user vote:', error)
+  }
+})
+
 router.put('/:id', async (req, res) => {
   try {
     const updatedUser = await db.updateUser(req.params.id, req.body)
@@ -141,6 +154,18 @@ router.get('/mails/', async (req, res) => {
   }
 })
 
+router.get('/mails/curentList/', async (req, res) => {
+  const name = decodeURIComponent(req.query.name)
+  console.log(name)
+  const someUser = await db.getEmailLists(req.locals.userId)
+  const newList = JSON.parse(someUser[0].email_addresses)
+  if (!someUser) {
+    return res.status(404).send('The user with the given ID was not found.')
+  } else {
+    return res.send(emailListFromLists(newList, name))
+  }
+})
+
 const schema = {
   email: Joi.string().min(3).required(),
   password: Joi.string().min(3).required()
@@ -148,6 +173,22 @@ const schema = {
 
 function validateUser(someUser) {
   return Joi.validate(someUser, schema)
+}
+
+const emailListFromLists = (list, recognizer) => {
+  let contentForReturn = ''
+  for (let i = 0; i < list.length; i++) {
+    if (list[i].name === recognizer) {
+      for (let j = 0; j < list[i].emails.length; j++) {
+        if (j > 0) {
+          contentForReturn = contentForReturn + ', ' + list[i].emails[j].mail
+        } else {
+          contentForReturn = list[i].emails[j].mail
+        }
+      }
+    }
+  }
+  return contentForReturn
 }
 
 module.exports = router
