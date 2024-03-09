@@ -103,6 +103,10 @@ router.put('/template/change', async (req, res) => {
       req.body.lov_id
     )
 
+    console.log(req.body.oldTitle)
+    console.log(req.body.title)
+    console.log(req.body.description)
+
     const listForUpdate = JSON.parse(partOfLists[0].template)
 
     const newListForUpdate = listForUpdate
