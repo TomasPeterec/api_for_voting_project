@@ -2,15 +2,10 @@
 .env
 firebase-adminsdk.json
 root.crt
-/node_modules
-/ssl
-.prettierignore
-back-app.tar
-.prettierrc.json
-
+ssl/
 
 # Node.js and npm files
-node_modules
+node_modules/
 npm-debug.log
 
 # Docker-related files
@@ -20,3 +15,11 @@ docker-compose.yml
 # OS-specific files
 .DS_Store
 Thumbs.db
+
+# Git-related files
+.git
+.gitignore
+
+# Build and temporary files
+*.log
+*.tmp
