@@ -11,6 +11,17 @@ const { VERIFY_EMAIL_API_ENDPOINT } = require('../../constants')
 const router = express.Router()
 const reactJsRootUrl = process.env.ALLOWED_ORIGINS
 
+router.use((req, res, next) => {
+  // Access the 'X-User-ID' header from the request
+  const userId = req.headers['x-user-id']
+
+  // Store the User ID in req.locals for later use
+  req.locals = {
+    userId
+  }
+  next()
+})
+
 router.use(
   cors({
     origin: reactJsRootUrl ? [reactJsRootUrl] : [] // Use the origin directly
@@ -72,25 +83,8 @@ router.post('/', async (req, res) => {
 })
 
 router.post('/multiplemails', async (req, res) => {
-  // console.log(req.body)
-  // const { error } = validateUser(req.body)
-  // if (error) return res.status(400).send(error.details[0].message)
-
   try {
     const token = tokenGen.generateToken(req.body.mails[0])
-    console.log(req.body.lov_id)
-    // const recordedUser = await db.createUser({
-    //   email,
-    //   password: hashedPassword,
-    //   verified: token
-    // })
-
-    // if (parseInt(recordedUser) === parseInt(recordedUser) * 1) {
-    //   console.log(`New primary key ${recordedUser} was send.`)
-    //   SendMultipleEmails.SendMultipleEmails(email, token)
-    // } else {
-    //   console.log('New primary key was not send.')
-    // }
 
     for (let i = 0; i < req.body.mails.length; i++) {
       SendMultipleEmails(req.body.mails[i], token)
@@ -99,6 +93,19 @@ router.post('/multiplemails', async (req, res) => {
     // res.send(recordedUser)
   } catch (error) {
     console.error(error)
+  }
+})
+
+router.put('/nevSetOfMails', async (req, res) => {
+  try {
+    const updatedUser = await db.updateUser(req.params.id, req.body)
+    if (updatedUser) {
+      return res.send('The user with the given ID was updated.')
+    } else {
+      return res.status(404).send('The user with the given ID was not found.')
+    }
+  } catch (error) {
+    console.error('Error creating user vote:', error)
   }
 })
 
@@ -137,6 +144,28 @@ router.delete('/:id', async (req, res) => {
   console.log(`User ${someUser} was deleted`)
 })
 
+router.get('/mails/', async (req, res) => {
+  const someUser = await db.getEmailLists(req.locals.userId)
+  const newList = JSON.parse(someUser[0].email_addresses)
+  if (!someUser) {
+    return res.status(404).send('The user with the given ID was not found.')
+  } else {
+    return res.send(newList)
+  }
+})
+
+router.get('/mails/curentList/', async (req, res) => {
+  const name = decodeURIComponent(req.query.name)
+  console.log(name)
+  const someUser = await db.getEmailLists(req.locals.userId)
+  const newList = JSON.parse(someUser[0].email_addresses)
+  if (!someUser) {
+    return res.status(404).send('The user with the given ID was not found.')
+  } else {
+    return res.send(emailListFromLists(newList, name))
+  }
+})
+
 const schema = {
   email: Joi.string().min(3).required(),
   password: Joi.string().min(3).required()
@@ -144,6 +173,22 @@ const schema = {
 
 function validateUser(someUser) {
   return Joi.validate(someUser, schema)
+}
+
+const emailListFromLists = (list, recognizer) => {
+  let contentForReturn = ''
+  for (let i = 0; i < list.length; i++) {
+    if (list[i].name === recognizer) {
+      for (let j = 0; j < list[i].emails.length; j++) {
+        if (j > 0) {
+          contentForReturn = contentForReturn + ', ' + list[i].emails[j].mail
+        } else {
+          contentForReturn = list[i].emails[j].mail
+        }
+      }
+    }
+  }
+  return contentForReturn
 }
 
 module.exports = router
