@@ -40,6 +40,128 @@ router.get('/subset', authenticateToken, async (req, res) => {
   return;
 });
 
+// Endpoint to get voting template
+router.get('/template', authenticateToken, async (req, res) => {
+  const { uid: userId } = req.user;
+  const { id: currentId } = req.query; // Extract `id` from query parameters
+
+  console.log('hited');
+
+  try {
+    // You can now use `currentId` in your database query if necessary
+    const results = await db('candidates')
+      .where({ voting_id: currentId }) // Assuming `lov_id` is the column for `id`
+      .select('candidate_id', 'name', 'description', 'votingv_value');
+
+    return res.status(200).json({ results }); // Return the results
+  } catch (err) {
+    return res.status(500).json({ error: 'Error fetching data: ' + err.message });
+  }
+});
+
+// Endpoint to write new candidate
+router.post('/:votingId/candidates', authenticateToken, async (req, res) => {
+  const votingId = req.params.votingId; // Extracting voting ID from URL parameters
+  const { uid: userId } = req.user; // Extracting user ID from token payload
+  const { title, description } = req.body; // Extracting title and description from request body
+
+  try {
+    // Generate a new candidate ID (UUID)
+    const candidateId = uuidv4();
+
+    // Insert new candidate into the database
+    const result = await db('candidates').insert({
+      voting_id: votingId,
+      candidate_id: candidateId, // New UUID for the candidate
+      name: title, // Using 'title' as name
+      description: description, // Using 'description' as description
+    });
+
+    // Check if the insert was successful and send appropriate response
+    if (result) {
+      return res.status(201).json({
+        message: 'Candidate added successfully',
+        candidate: {
+          voting_id: votingId,
+          candidate_id: candidateId,
+          name: title,
+          description: description,
+        },
+      });
+    } else {
+      return res.status(500).json({ error: 'Error inserting candidate' });
+    }
+  } catch (err) {
+    console.error('Error inserting candidate:', err.message);
+    return res.status(500).json({ error: 'Error inserting candidate: ' + err.message });
+  }
+});
+
+// Endpoint to edit the row
+router.put('/:votingId/candidates/:candidateId', authenticateToken, async (req, res) => {
+  const votingId = req.params.votingId; // Extracting voting ID from URL parameters
+  const candidateId = req.params.candidateId; // Extracting candidate ID from URL parameters
+  const { uid: userId } = req.user;
+  const { title, description } = req.body; // Extracting title and description from request body
+
+  try {
+    // Update the existing candidate in the database
+    const result = await db('candidates')
+      .where({ voting_id: votingId, candidate_id: candidateId }) // Identify the row by `voting_id` and `candidate_id`
+      .update({
+        name: title, // Update 'name' field with 'title'
+        description: description, // Update 'description' field with the new value
+      });
+
+    // Check if the update was successful
+    if (result) {
+      return res.status(200).json({
+        message: 'Candidate updated successfully',
+        candidate: {
+          voting_id: votingId,
+          candidate_id: candidateId,
+          name: title,
+          description: description,
+        },
+      });
+    } else {
+      // If no row was updated, that means the candidate may not exist
+      return res.status(404).json({ error: 'Candidate not found' });
+    }
+  } catch (err) {
+    console.error('Error updating candidate:', err.message);
+    return res.status(500).json({ error: 'Error updating candidate: ' + err.message });
+  }
+});
+
+// Endpoint to delete a candidate
+router.delete('/:votingId/candidates/:candidateId', authenticateToken, async (req, res) => {
+  const votingId = req.params.votingId; // Extracting voting ID from URL parameters
+  const candidateId = req.params.candidateId; // Extracting candidate ID from URL parameters
+  const { uid: userId } = req.user;
+
+  try {
+    // Delete candidate from the database based on voting_id and candidate_id
+    const result = await db('candidates')
+      .where({ voting_id: votingId, candidate_id: candidateId }) // Use `voting_id` and `candidate_id` to identify the row
+      .del(); // Delete the row
+
+    // Check if the delete was successful
+    if (result) {
+      return res.status(200).json({
+        message: 'Candidate deleted successfully',
+        voting_id: votingId,
+        candidate_id: candidateId,
+      });
+    } else {
+      return res.status(404).json({ error: 'Candidate not found or already deleted' });
+    }
+  } catch (err) {
+    console.error('Error deleting candidate:', err.message);
+    return res.status(500).json({ error: 'Error deleting candidate: ' + err.message });
+  }
+});
+
 // Endpoint to insert a new voting item
 router.post('/insert', authenticateToken, async (req, res) => {
   const { uid: userId } = req.user;

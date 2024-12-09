@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server/server.js",
+    "devStart": "nodemon server/server.js",
     "est": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint .",
     "format": "prettier --write ."

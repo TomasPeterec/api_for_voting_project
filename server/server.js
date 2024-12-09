@@ -16,8 +16,12 @@ app.use((req, res, next) => {
 const usersRouter = require('./routes/user-api');
 app.use('/', usersRouter);
 
+// dividing of routes to routing files
 const listOfVotingsRouter = require('./routes/listOfVotings-api');
 app.use('/api/listOfVotings', listOfVotingsRouter);
+
+const listOfEmailsRouter = require('./routes/listOfEmails');
+app.use('/api/emaillists', listOfEmailsRouter);
 
 // Private route example
 app.get('/private', authenticateToken, (req, res) => {
