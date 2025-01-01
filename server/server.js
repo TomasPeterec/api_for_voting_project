@@ -23,6 +23,9 @@ app.use('/api/listOfVotings', listOfVotingsRouter);
 const listOfEmailsRouter = require('./routes/listOfEmails');
 app.use('/api/emaillists', listOfEmailsRouter);
 
+const votingsRecordsRouter = require('./routes/votingsRecords');
+app.use('/api/voting-records', votingsRecordsRouter);
+
 // Private route example
 app.get('/private', authenticateToken, (req, res) => {
   res.json({ message: 'This is a private route', user: req.user });

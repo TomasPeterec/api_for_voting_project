@@ -59,8 +59,6 @@ router.post('/', authenticateToken, async (req, res) => {
   const { uid: userId } = req.user;
   const { nameOfEmaillist, mails } = req.body;
 
-  console.log('post hitted');
-
   const lovId = uuidv4();
 
   try {
