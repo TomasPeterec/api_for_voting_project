@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
-const SendSingleEmail = require('../../send-single-email');
+const SendVotingEmail = require('../../send-voting-email');
+const SendResultsEmail = require('../../send-results-email');
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 const { v4: uuidv4 } = require('uuid'); // Import the v4 UUID function from uuid
 
@@ -51,7 +52,7 @@ router.get('/:uuId/:uuIdSecond', async (req, res) => {
   }
 });
 
-// sending emails
+// sending emails with votings
 router.post('/:idOfVotes', authenticateToken, async (req, res) => {
   const idOfVotes = req.params.idOfVotes; // Extracting voting ID from URL parameters
   const { uid: userId } = req.user;
@@ -67,8 +68,24 @@ router.post('/:idOfVotes', authenticateToken, async (req, res) => {
   await db('voting_records').insert(tempList);
 
   tempList.map(async (mail) => {
+    SendVotingEmail(mail.mail, `/voting-records/${mail.id_of_votes}/votingform/${mail.email_id}`).then(() =>
+      console.log('Email sent successfully'),
+    );
+  });
 
-    SendSingleEmail(mail.mail, `/voting-records/${mail.id_of_votes}/votingform/${mail.email_id}`).then(() =>
+  // Return ensures no other code executes
+  return;
+});
+
+// sending emails with results
+router.post('/:idOfVotes/send-results', authenticateToken, async (req, res) => {
+  const idOfVotes = req.params.idOfVotes; // Extracting voting ID from URL parameters
+  const { uid: userId } = req.user;
+
+  const mailList = await db('emails').select('mail').where('list_id', idOfVotes);
+
+  mailList.map(async (mail) => {
+    SendResultsEmail(mail.mail, `/voting-records/${idOfVotes}/results`).then(() =>
       console.log('Email sent successfully'),
     );
   });
