@@ -1,9 +1,5 @@
 const knex = require('knex');
-const fs = require('fs');
-const path = require('path');
-const config = require('../config'); // Import config
-
-const caCert = fs.readFileSync(path.resolve(config.db.caCertPath)).toString();
+const config = require('../config');
 
 const knexConfig = {
   client: 'pg',
@@ -13,8 +9,7 @@ const knexConfig = {
     password: config.db.password,
     database: config.db.name,
     ssl: {
-      ca: caCert,
-      rejectUnauthorized: false, // For development, set to true in production
+      rejectUnauthorized: false,
     },
   },
   migrations: {
