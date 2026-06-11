@@ -31,6 +31,9 @@ app.get('/private', authenticateToken, (req, res) => {
   res.json({ message: 'This is a private route', user: req.user });
 });
 
-// Start the server
-//const serverInstance = protocolsSwitchServer(app);
-protocolsSwitchServer(app);
+// Local start / Vercel export
+if (process.env.VERCEL) {
+  module.exports = app;
+} else {
+  protocolsSwitchServer(app);
+}

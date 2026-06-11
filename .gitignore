@@ -20,3 +20,7 @@ docker-compose.yml
 # OS-specific files
 .DS_Store
 Thumbs.db
+
+echo "*.key" >> .gitignore
+echo "*.crt" >> .gitignore
+echo "*.ca-bundle" >> .gitignore
